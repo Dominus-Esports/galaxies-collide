@@ -1,0 +1,47 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up phase"
+    - duration: 120
+      arrivalRate: 10
+      name: "Normal load phase"
+    - duration: 60
+      arrivalRate: 20
+      name: "Peak load phase"
+    - duration: 60
+      arrivalRate: 5
+      name: "Cool down phase"
+
+scenarios:
+  - name: "Game Load Test"
+    weight: 70
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/game"
+          expect:
+            - statusCode: 200
+      - think: 2
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+
+  - name: "Game Performance Test"
+    weight: 30
+    flow:
+      - get:
+          url: "/game"
+          expect:
+            - statusCode: 200
+      - think: 5
+      - get:
+          url: "/api/metrics"
+          expect:
+            - statusCode: 200
+            - contentType: json
