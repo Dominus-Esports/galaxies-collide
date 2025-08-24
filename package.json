@@ -8,7 +8,20 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:all": "jest src/__tests__/simple.test.js"
+    "test:all": "jest src/__tests__/simple.test.js",
+    "dev:auto": "npm run dev & npm run watch:push",
+    "watch:push": "nodemon --watch src --ext ts,tsx,js,jsx --exec \"npm run push:dev\"",
+    "push:dev": "powershell -ExecutionPolicy Bypass -File scripts/dev-auto.ps1 develop",
+    "push:feature": "powershell -ExecutionPolicy Bypass -File scripts/dev-auto.ps1 feature",
+    "push:hotfix": "powershell -ExecutionPolicy Bypass -File scripts/dev-auto.ps1 hotfix",
+    "deploy:staging": "vercel --target=staging",
+    "deploy:prod": "vercel --prod",
+    "branch:dev": "git checkout -b develop && git push -u origin develop",
+    "branch:feature": "git checkout -b feature/$(Get-Date -Format \"yyyyMMdd-HHmmss\")",
+    "branch:hotfix": "git checkout -b hotfix/$(Get-Date -Format \"yyyyMMdd-HHmmss\")",
+    "merge:dev": "git checkout main && git merge develop && git push origin main",
+    "clean": "git clean -fd && git reset --hard HEAD",
+    "status": "git status && echo \"--- Deployment Status ---\" && vercel ls"
   },
   "dependencies": {
     "@babylonjs/core": "^8.24.0",
