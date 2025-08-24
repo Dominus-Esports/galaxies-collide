@@ -1,83 +1,42 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { SimpleGameEngine } from "@/game/engine/SimpleGameEngine";
-import { Vector3 } from "@babylonjs/core";
+import { useEffect, useRef } from "react";
 
 export default function GamePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const gameEngineRef = useRef<SimpleGameEngine | null>(null);
-  const [gameState, setGameState] = useState<any>(null);
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    // Initialize simple game engine
-    gameEngineRef.current = new SimpleGameEngine(canvasRef.current);
+    // Simple canvas setup
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    // Update game state every 100ms
-    const interval = setInterval(() => {
-      if (gameEngineRef.current) {
-        setGameState(gameEngineRef.current.getGameState());
-      }
-    }, 100);
+    // Set canvas size
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    return () => {
-      clearInterval(interval);
-      if (gameEngineRef.current) {
-        gameEngineRef.current.stop();
-      }
+    // Simple animation
+    let frame = 0;
+    const animate = () => {
+      frame++;
+      
+      // Clear canvas
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw simple animation
+      ctx.fillStyle = "white";
+      ctx.font = "24px Arial";
+      ctx.fillText("🌌 Galaxies Collide - Coming Soon!", 50, 100);
+      ctx.fillText(`Frame: ${frame}`, 50, 150);
+      
+      requestAnimationFrame(animate);
     };
+    
+    animate();
   }, []);
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (!gameEngineRef.current) return;
-
-    const speed = 1;
-    const direction = new Vector3(0, 0, 0);
-
-    switch (event.key.toLowerCase()) {
-      case "w":
-        direction.z = -speed;
-        break;
-      case "s":
-        direction.z = speed;
-        break;
-      case "a":
-        direction.x = -speed;
-        break;
-      case "d":
-        direction.x = speed;
-        break;
-      case " ":
-        // Attack nearest enemy
-        if (gameState?.enemies?.length > 0) {
-          const nearestEnemy = gameState.enemies[0];
-          gameEngineRef.current.attackEnemy(nearestEnemy.id);
-        }
-        break;
-      case "e":
-        // Spawn enemy
-        const randomPosition = new Vector3(
-          (Math.random() - 0.5) * 10,
-          0,
-          (Math.random() - 0.5) * 10
-        );
-        gameEngineRef.current.addEnemy(randomPosition);
-        break;
-    }
-
-    if (direction.length() > 0) {
-      gameEngineRef.current.movePlayer(direction);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [gameState]);
 
   return (
     <div className="w-full h-screen bg-black flex flex-col">
@@ -87,32 +46,18 @@ export default function GamePage() {
         className="w-full h-full"
         style={{ touchAction: "none" }}
       />
-      
+
       {/* Game UI */}
       <div className="absolute top-4 left-4 text-white">
-        <h1 className="text-2xl font-bold mb-2">Galaxies Collide</h1>
-        <p className="text-sm opacity-75">Simple Combat Demo</p>
-      </div>
-      
-      {/* Game Stats */}
-      <div className="absolute top-4 right-4 text-white text-sm">
-        <div>Level: {gameState?.player?.level || 1}</div>
-        <div>Health: {gameState?.player?.health || 100}/{gameState?.player?.maxHealth || 100}</div>
-        <div>Experience: {gameState?.player?.experience || 0}</div>
-        <div>Enemies: {gameState?.enemies?.length || 0}</div>
-        <div>Game Time: {Math.floor(gameState?.gameTime || 0)}s</div>
-      </div>
-      
-      {/* Controls */}
-      <div className="absolute bottom-4 left-4 text-white text-sm opacity-75">
-        <div>WASD - Move</div>
-        <div>Space - Attack</div>
-        <div>E - Spawn Enemy</div>
+        <h1 className="text-2xl font-bold mb-2">🌌 Galaxies Collide</h1>
+        <p className="text-sm opacity-75">Simple Demo</p>
       </div>
 
-      {/* Game Status */}
-      <div className="absolute bottom-4 right-4 text-white text-sm">
-        <div>Status: Running</div>
+      {/* Controls */}
+      <div className="absolute bottom-4 left-4 text-white text-sm bg-black bg-opacity-50 p-3 rounded">
+        <div className="font-bold mb-2">Status</div>
+        <div>Basic canvas working</div>
+        <div>Ready for BabylonJS integration</div>
       </div>
     </div>
   );
