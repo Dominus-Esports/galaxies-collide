@@ -1,0 +1,86 @@
+name: AI Orchestrator
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    # Allow manual triggering
+  workflow_run:
+    workflows: ["CI", "Staging"]
+    types:
+      - completed
+    branches: [ develop ]
+
+jobs:
+  ai-orchestration:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "18"
+        cache: "npm"
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Setup AI Orchestrator
+      run: |
+        echo "🤖 Setting up AI Orchestrator..."
+        npm install axios crypto-js
+        echo "✅ Dependencies installed"
+    
+    - name: Run AI Analysis
+      env:
+        CURSOR_GC: ${{ secrets.CURSOR_GC }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+      run: |
+        echo "🔍 Starting AI codebase analysis..."
+        node -e "
+          const { AIOrchestrator } = require('./scripts/AIOrchestrator.ts');
+          const { AIOrchestratorConfigManager } = require('./scripts/AIOrchestratorConfig.ts');
+          
+          const configManager = AIOrchestratorConfigManager.getInstance();
+          const config = configManager.loadFromEnvironment();
+          const orchestrator = new AIOrchestrator(config);
+          
+          orchestrator.analyzeCodebase()
+            .then(analysis => {
+              console.log('📊 Analysis Score:', analysis.score);
+              console.log('💡 Suggestions:', analysis.suggestions.length);
+              console.log('🔧 Optimizations:', analysis.optimizations.length);
+              
+              // Create analysis report
+              const report = {
+                timestamp: new Date().toISOString(),
+                score: analysis.score,
+                suggestions: analysis.suggestions,
+                optimizations: analysis.optimizations.map(opt => opt.commitMessage),
+                issues: analysis.issues
+              };
+              
+              require('fs').writeFileSync('ai-analysis-report.json', JSON.stringify(report, null, 2));
+              console.log('📄 Analysis report saved to ai-analysis-report.json');
+            })
+            .catch(error => {
+              console.error('❌ Analysis failed:', error);
+              process.exit(1);
+            });
+        "
+    
+    - name: Upload AI Analysis Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ai-analysis-report
+        path: ai-analysis-report.json
+        retention-days: 30
