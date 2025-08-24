@@ -38,7 +38,7 @@ export class SimpleDataStorage {
       }
 
       const data = JSON.parse(savedData);
-      
+
       // Validate data structure
       if (!this.isValidPlayerData(data)) {
         console.warn("Invalid player data found, creating new save");
