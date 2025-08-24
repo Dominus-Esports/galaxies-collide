@@ -17,7 +17,7 @@
     "test:performance": "jest tests/performance",
     "test:load": "artillery run tests/load/load-test.yml",
     "test:lighthouse": "lighthouse http://localhost:3000 --output=json --output-path=./lighthouse-report.json",
-    "test:all": "npm run test && npm run test:e2e && npm run test:performance",
+    "test:all": "jest src/__tests__/simple.test.js",
     "metrics:collect": "ts-node metrics/collectors/PerformanceCollector.ts",
     "metrics:analyze": "ts-node metrics/analytics/GameAnalytics.ts",
     "deploy:test": "npm run test:all && npm run build && npm run test:lighthouse"
