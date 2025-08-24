@@ -84,7 +84,7 @@ export class SimpleDataStorage {
   }
 
   // Validate player data structure
-  private static isValidPlayerData(data: any): data is SimplePlayerData {
+  private static isValidPlayerData(data: unknown): data is SimplePlayerData {
     return (
       typeof data === "object" &&
       typeof data.id === "string" &&
