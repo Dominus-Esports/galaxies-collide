@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import BabylonGame3D from '../components/BabylonGame3D';
 import DimensionalCombat from '../components/DimensionalCombat';
 import DimensionalHideout from '../components/DimensionalHideout';
-import BabylonGame3D from '../components/BabylonGame3D';
 import { useGameStore } from '../stores/GameStore';
 
 interface Chamber {

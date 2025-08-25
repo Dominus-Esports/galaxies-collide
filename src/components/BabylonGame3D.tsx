@@ -1,19 +1,16 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import {
-  Engine,
-  Scene,
-  FreeCamera,
-  Vector3,
-  HemisphericLight,
-  MeshBuilder,
-  StandardMaterial,
-  Color3,
-  Mesh,
-  PhysicsImpostor,
-  HavokPlugin
+    Color3,
+    Engine,
+    FreeCamera,
+    HemisphericLight,
+    MeshBuilder,
+    Scene,
+    StandardMaterial,
+    Vector3
 } from '@babylonjs/core';
+import { useEffect, useRef } from 'react';
 
 interface BabylonGame3DProps {
   onExit: () => void;
@@ -27,7 +24,7 @@ export default function BabylonGame3D({ onExit }: BabylonGame3DProps) {
 
     const canvas = canvasRef.current;
     const engine = new Engine(canvas, true);
-    
+
     const createScene = async () => {
       const scene = new Scene(engine);
 
@@ -36,38 +33,63 @@ export default function BabylonGame3D({ onExit }: BabylonGame3DProps) {
       camera.setTarget(Vector3.Zero());
       camera.attachControl(canvas, true);
 
-      // Lighting
-      const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
-      light.intensity = 0.7;
+             // Enhanced lighting for dimensional atmosphere
+       const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
+       light.intensity = 0.3;
+       light.diffuse = new Color3(0.2, 0.3, 0.8);
+       light.groundColor = new Color3(0.8, 0.2, 0.5);
 
-      // Ground
-      const ground = MeshBuilder.CreateGround('ground', { width: 20, height: 20 }, scene);
-      const groundMaterial = new StandardMaterial('groundMat', scene);
-      groundMaterial.diffuseColor = new Color3(0.2, 0.2, 0.2);
-      ground.material = groundMaterial;
+             // Dimensional ground with cosmic texture
+       const ground = MeshBuilder.CreateGround('ground', { width: 40, height: 40 }, scene);
+       const groundMaterial = new StandardMaterial('groundMat', scene);
+       groundMaterial.diffuseColor = new Color3(0.1, 0.05, 0.2);
+       groundMaterial.emissiveColor = new Color3(0.05, 0.02, 0.1);
+       ground.material = groundMaterial;
 
-      // Player character (simple sphere for now)
-      const player = MeshBuilder.CreateSphere('player', { diameter: 1 }, scene);
-      player.position = new Vector3(0, 1, 0);
-      const playerMaterial = new StandardMaterial('playerMat', scene);
-      playerMaterial.diffuseColor = new Color3(0, 0.5, 1);
-      player.material = playerMaterial;
+             // Player character with dimensional glow
+       const player = MeshBuilder.CreateSphere('player', { diameter: 1 }, scene);
+       player.position = new Vector3(0, 1, 0);
+       const playerMaterial = new StandardMaterial('playerMat', scene);
+       playerMaterial.diffuseColor = new Color3(0, 0.8, 1);
+       playerMaterial.emissiveColor = new Color3(0, 0.3, 0.5);
+       player.material = playerMaterial;
 
-      // Dimensional chambers (floating platforms)
-      const createChamber = (name: string, position: Vector3, color: Color3) => {
-        const chamber = MeshBuilder.CreateBox(name, { height: 0.5, width: 3, depth: 3 }, scene);
-        chamber.position = position;
-        const chamberMaterial = new StandardMaterial(`${name}Mat`, scene);
-        chamberMaterial.diffuseColor = color;
-        chamber.material = chamberMaterial;
-        return chamber;
-      };
+             // Enhanced dimensional chambers with glow effects
+       const createChamber = (name: string, position: Vector3, color: Color3, size: number = 3) => {
+         const chamber = MeshBuilder.CreateBox(name, { height: 0.5, width: size, depth: size }, scene);
+         chamber.position = position;
+         const chamberMaterial = new StandardMaterial(`${name}Mat`, scene);
+         chamberMaterial.diffuseColor = color;
+         chamberMaterial.emissiveColor = color.scale(0.3);
+         chamber.material = chamberMaterial;
+         return chamber;
+       };
 
-      // Create dimensional chambers
-      createChamber('realityRelocator', new Vector3(-5, 3, 0), new Color3(0.5, 0, 1));
-      createChamber('chronoChamber', new Vector3(5, 3, 0), new Color3(1, 0.5, 0));
-      createChamber('gravityChamber', new Vector3(0, 3, 5), new Color3(0, 1, 0.5));
-      createChamber('dreamscapeNexus', new Vector3(0, 3, -5), new Color3(1, 0, 0.5));
+       // Create dimensional chambers with proper spacing
+       createChamber('realityRelocator', new Vector3(-8, 4, 0), new Color3(0.5, 0, 1), 4);
+       createChamber('chronoChamber', new Vector3(8, 4, 0), new Color3(1, 0.5, 0), 4);
+       createChamber('gravityChamber', new Vector3(0, 4, 8), new Color3(0, 1, 0.5), 4);
+       createChamber('dreamscapeNexus', new Vector3(0, 4, -8), new Color3(1, 0, 0.5), 4);
+       createChamber('voidGateway', new Vector3(-8, 4, 8), new Color3(0.8, 0, 0.8), 4);
+       createChamber('dimensionalNexus', new Vector3(8, 4, -8), new Color3(0.5, 0.5, 1), 4);
+
+       // Add floating cosmic particles
+       for (let i = 0; i < 50; i++) {
+         const particle = MeshBuilder.CreateSphere(`particle${i}`, { diameter: 0.1 }, scene);
+         particle.position = new Vector3(
+           (Math.random() - 0.5) * 40,
+           Math.random() * 10 + 2,
+           (Math.random() - 0.5) * 40
+         );
+         const particleMaterial = new StandardMaterial(`particleMat${i}`, scene);
+         particleMaterial.diffuseColor = new Color3(
+           Math.random() * 0.5 + 0.5,
+           Math.random() * 0.5 + 0.5,
+           Math.random() * 0.5 + 0.5
+         );
+         particleMaterial.emissiveColor = particleMaterial.diffuseColor.scale(0.5);
+         particle.material = particleMaterial;
+       }
 
       // Simple movement controls
       let moveForward = false;
@@ -128,13 +150,13 @@ export default function BabylonGame3D({ onExit }: BabylonGame3DProps) {
   }, [onExit]);
 
   return (
-    <div className="relative w-full h-screen">
+    <div className="fixed inset-0 w-full h-full">
       <canvas
         ref={canvasRef}
         className="w-full h-full"
         style={{ touchAction: 'none' }}
       />
-      <div className="absolute top-4 left-4 text-white bg-black/50 p-4 rounded">
+      <div className="absolute top-4 left-4 text-white bg-black/50 p-4 rounded z-10">
         <h2 className="text-xl font-bold mb-2">🌌 Dimensional Realms</h2>
         <p className="text-sm mb-2">WASD - Move</p>
         <p className="text-sm mb-2">Mouse - Look</p>
@@ -142,7 +164,7 @@ export default function BabylonGame3D({ onExit }: BabylonGame3DProps) {
       </div>
       <button
         onClick={onExit}
-        className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded z-10"
       >
         Exit 3D World
       </button>
