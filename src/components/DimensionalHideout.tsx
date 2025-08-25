@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useGameStore } from '../store/gameStore';
+import { useGameStore } from '../stores/GameStore';
 
 interface Chamber {
   id: string;
