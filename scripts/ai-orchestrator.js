@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const { AIOrchestrator } = require("../src/lib/AIOrchestrator.ts");
-const { AIOrchestratorConfigManager } = require("../src/lib/AIOrchestratorConfig.ts");
+const { AIOrchestrator } = require("./AIOrchestrator.ts");
+const { AIOrchestratorConfigManager } = require("./AIOrchestratorConfig.ts");
 
 async function main() {
   try {
