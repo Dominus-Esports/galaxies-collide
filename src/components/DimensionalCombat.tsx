@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameStore } from '../stores/GameStore';
 
 interface Chamber {
@@ -56,13 +56,13 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
 
       const chamberEnemies = enemyTypes[chamber.type] || ['Dimensional Entity'];
       const numEnemies = Math.min(3, Math.floor(chamber.level / 2) + 1);
-      
+
       const newEnemies: DimensionalEnemy[] = [];
-      
+
       for (let i = 0; i < numEnemies; i++) {
         const enemyName = chamberEnemies[Math.floor(Math.random() * chamberEnemies.length)];
         const enemyLevel = chamber.level + Math.floor(Math.random() * 3);
-        
+
         newEnemies.push({
           id: `enemy-${i}-${Date.now()}`,
           name: enemyName,
@@ -74,7 +74,7 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
           dimensionalEffects: getDimensionalEffects(chamber)
         });
       }
-      
+
       setEnemies(newEnemies);
       setIsCombatActive(true);
       addCombatLog(`🌌 Entered ${chamber.name} - ${chamber.type} realm`);
@@ -92,7 +92,7 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
       world: ['Gravity Crush', 'Spatial Tear', 'World Bend'],
       void: ['Void Corruption', 'Reality Break', 'Void Drain']
     };
-    
+
     return abilities[type] || ['Dimensional Strike'];
   };
 
@@ -109,31 +109,31 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
 
     const enemy = enemies[0];
     const damage = Math.floor(Math.random() * 30) + 20 + (player.level * 5);
-    
+
     const newEnemies = [...enemies];
     newEnemies[0] = { ...enemy, health: Math.max(0, enemy.health - damage) };
-    
+
     addCombatLog(`⚔️ You deal ${damage} damage to ${enemy.name}!`);
-    
+
     if (newEnemies[0].health <= 0) {
       addCombatLog(`💀 ${enemy.name} has been defeated!`);
       newEnemies.shift();
-      
+
       // Add rewards
       const chamberRewards = chamber.rewards[Math.floor(Math.random() * chamber.rewards.length)];
       setRewards(prev => [...prev, chamberRewards]);
       addCombatLog(`🎁 Gained ${chamberRewards}!`);
     }
-    
+
     setEnemies(newEnemies);
     setCurrentTurn('enemy');
-    
+
     // Check if all enemies defeated
     if (newEnemies.length === 0) {
       handleCombatVictory();
       return;
     }
-    
+
     // Enemy turn after delay
     setTimeout(() => {
       handleEnemyTurn(newEnemies);
@@ -142,20 +142,20 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
 
   const handleEnemyTurn = (currentEnemies: DimensionalEnemy[]) => {
     if (currentEnemies.length === 0) return;
-    
+
     const enemy = currentEnemies[0];
     const ability = enemy.abilities[Math.floor(Math.random() * enemy.abilities.length)];
     const damage = Math.floor(Math.random() * 25) + 15 + (enemy.level * 3);
-    
+
     addCombatLog(`👹 ${enemy.name} uses ${ability} for ${damage} damage!`);
-    
+
     updatePlayer({
       ...player,
       health: Math.max(0, player.health - damage)
     });
-    
+
     setCurrentTurn('player');
-    
+
     // Check if player defeated
     if (player.health - damage <= 0) {
       handleCombatDefeat();
@@ -166,12 +166,12 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
     setIsCombatActive(false);
     addCombatLog(`🎉 Victory! Chamber completed!`);
     addCombatLog(`📈 Gained ${chamber.experienceReward} experience!`);
-    
+
     updatePlayer({
       ...player,
       experience: player.experience + chamber.experienceReward
     });
-    
+
     setTimeout(() => {
       onComplete(rewards);
     }, 2000);
@@ -180,7 +180,7 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
   const handleCombatDefeat = () => {
     setIsCombatActive(false);
     addCombatLog(`💀 Defeat! You have been overwhelmed by the dimensional forces.`);
-    
+
     setTimeout(() => {
       onExit();
     }, 2000);
@@ -188,7 +188,7 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
 
   const handleSpecialAbility = () => {
     if (!isCombatActive || currentTurn !== 'player') return;
-    
+
     const specialAbilities = {
       reality: 'Reality Anchor',
       dream: 'Dream Shield',
@@ -196,12 +196,12 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
       world: 'Gravity Shield',
       void: 'Void Barrier'
     };
-    
+
     const ability = specialAbilities[chamber.type] || 'Dimensional Shield';
     addCombatLog(`🛡️ Used ${ability} - Reduced damage taken!`);
-    
+
     setCurrentTurn('enemy');
-    
+
     setTimeout(() => {
       handleEnemyTurn(enemies);
     }, 1000);
@@ -210,7 +210,7 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
   const handleRetreat = () => {
     addCombatLog(`🏃 Retreating from ${chamber.name}...`);
     setIsCombatActive(false);
-    
+
     setTimeout(() => {
       onExit();
     }, 1500);
@@ -238,7 +238,7 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
         <div className="lg:col-span-1">
           <div className="bg-gray-800 rounded-lg p-6">
             <h2 className="text-2xl font-bold mb-4 text-blue-400">Player Status</h2>
-            
+
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between text-sm mb-1">
@@ -290,7 +290,7 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
                   >
                     ⚔️ Attack
                   </button>
-                  
+
                   <button
                     onClick={handleSpecialAbility}
                     disabled={currentTurn !== 'player'}
@@ -298,7 +298,7 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
                   >
                     🛡️ Special Ability
                   </button>
-                  
+
                   <button
                     onClick={handleRetreat}
                     className="w-full py-3 bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors font-semibold"
@@ -324,7 +324,7 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
         <div className="lg:col-span-1">
           <div className="bg-gray-800 rounded-lg p-6">
             <h2 className="text-2xl font-bold mb-4 text-red-400">Dimensional Combat</h2>
-            
+
             {enemies.length === 0 ? (
               <div className="text-center text-gray-400 py-8">
                 <div className="text-4xl mb-2">🎉</div>
@@ -349,12 +349,12 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
                         style={{ width: `${(enemy.health / enemy.maxHealth) * 100}%` }}
                       ></div>
                     </div>
-                    
+
                     {/* Enemy Abilities */}
                     <div className="mt-2 text-xs text-gray-400">
                       Abilities: {enemy.abilities.join(', ')}
                     </div>
-                    
+
                     {/* Dimensional Effects */}
                     {enemy.dimensionalEffects.length > 0 && (
                       <div className="mt-1 text-xs text-orange-400">
@@ -372,7 +372,7 @@ export default function DimensionalCombat({ chamber, onExit, onComplete }: Dimen
         <div className="lg:col-span-1">
           <div className="bg-gray-800 rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4 text-yellow-400">Combat Log</h2>
-            
+
             <div className="bg-gray-900 rounded-lg p-3 h-64 overflow-y-auto mb-4">
               {combatLog.map((log, index) => (
                 <div key={index} className="text-sm text-gray-300 mb-1">

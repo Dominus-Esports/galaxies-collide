@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DimensionalCombat from '../components/DimensionalCombat';
 import DimensionalHideout from '../components/DimensionalHideout';
+import BabylonGame3D from '../components/BabylonGame3D';
 import { useGameStore } from '../stores/GameStore';
 
 interface Chamber {
@@ -22,7 +23,7 @@ interface Chamber {
 
 export default function Home() {
   const { player, updatePlayer, enemies, spawnEnemy, removeEnemy } = useGameStore();
-  const [gameState, setGameState] = useState<'playing' | 'hideout' | 'combat'>('playing');
+  const [gameState, setGameState] = useState<'playing' | 'hideout' | 'combat' | '3d'>('playing');
   const [currentChamber, setCurrentChamber] = useState<Chamber | null>(null);
   const [lastAction, setLastAction] = useState<string>('');
 
@@ -113,6 +114,10 @@ export default function Home() {
     setGameState('hideout');
   };
 
+  const enter3DWorld = () => {
+    setGameState('3d');
+  };
+
   const exitHideout = () => {
     setGameState('playing');
   };
@@ -159,17 +164,29 @@ export default function Home() {
     return <DimensionalCombat chamber={currentChamber} onExit={exitCombat} onComplete={completeChamber} />;
   }
 
+  if (gameState === '3d') {
+    return <BabylonGame3D onExit={() => setGameState('playing')} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-900 via-purple-900 to-black text-white p-4">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-4xl font-bold text-yellow-400">Galaxies Collide</h1>
-        <button
-          onClick={enterHideout}
-          className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors text-lg font-semibold"
-        >
-          🌀 Enter Dimensional Hideout
-        </button>
+        <div className="flex gap-4">
+          <button
+            onClick={enterHideout}
+            className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors text-lg font-semibold"
+          >
+            🌀 Enter Dimensional Hideout
+          </button>
+          <button
+            onClick={enter3DWorld}
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-lg font-semibold"
+          >
+            🌌 Enter 3D World
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

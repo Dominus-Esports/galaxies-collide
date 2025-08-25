@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGameStore } from '../stores/GameStore';
 
 interface Chamber {
@@ -118,7 +118,7 @@ export default function DimensionalHideout({ onExit, onEnterChamber }: Dimension
 
   const handleChamberAction = (action: string, chamber: Chamber) => {
     setSelectedAction(action);
-    
+
     switch (action) {
       case 'enter':
         if (player.energy >= chamber.energyCost) {
@@ -154,13 +154,13 @@ export default function DimensionalHideout({ onExit, onEnterChamber }: Dimension
         }
         break;
     }
-    
+
     setTimeout(() => setSelectedAction(''), 3000);
   };
 
   const getChamberActions = (chamber: Chamber) => {
     const actions = [];
-    
+
     if (chamber.id === 'nexus') {
       actions.push('craft');
       actions.push('upgrade');
@@ -170,7 +170,7 @@ export default function DimensionalHideout({ onExit, onEnterChamber }: Dimension
         actions.push('upgrade');
       }
     }
-    
+
     return actions;
   };
 
@@ -258,7 +258,7 @@ export default function DimensionalHideout({ onExit, onEnterChamber }: Dimension
                 {currentChamberData.difficulty.toUpperCase()}
               </div>
             </div>
-            
+
             <div className="mb-6">
               <p className="text-gray-300 leading-relaxed">
                 {currentChamberData.description}
@@ -334,8 +334,8 @@ export default function DimensionalHideout({ onExit, onEnterChamber }: Dimension
                     key={action}
                     onClick={() => handleChamberAction(action, currentChamberData)}
                     className={`px-4 py-2 rounded-lg transition-colors capitalize font-semibold ${
-                      action === 'enter' 
-                        ? 'bg-green-600 hover:bg-green-700' 
+                      action === 'enter'
+                        ? 'bg-green-600 hover:bg-green-700'
                         : action === 'upgrade'
                         ? 'bg-yellow-600 hover:bg-yellow-700'
                         : 'bg-purple-600 hover:bg-purple-700'
@@ -352,8 +352,8 @@ export default function DimensionalHideout({ onExit, onEnterChamber }: Dimension
             {/* Action Feedback */}
             {selectedAction && (
               <div className={`rounded-lg p-4 text-center ${
-                selectedAction.includes('insufficient') 
-                  ? 'bg-red-600' 
+                selectedAction.includes('insufficient')
+                  ? 'bg-red-600'
                   : selectedAction.includes('upgraded') || selectedAction.includes('crafted')
                   ? 'bg-green-600'
                   : 'bg-blue-600'
@@ -375,7 +375,7 @@ export default function DimensionalHideout({ onExit, onEnterChamber }: Dimension
             <h2 className="text-xl font-semibold mb-4 text-orange-400">
               Player Status
             </h2>
-            
+
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between text-sm">
